@@ -1,0 +1,174 @@
+---
+zabbix_version: 4.2
+
+zabbix_server_package_state: present
+zabbix_web_package_state: present
+zabbix_server_install_recommends: True
+zabbix_server_install_database_client: True
+zabbix_datafiles_path: "/usr/share/doc/zabbix-server-mysql-{{ zabbix_version }}*"
+
+zabbix_packages:
+  redhat:
+    - "mariadb"
+    - "MySQL-python"
+    - "zabbix-server-mysql"
+    - "zabbix-agent"
+    - "zabbix-web-mysql"
+
+zabbix_security:
+  selinux_te_files:
+    - {name: "zabbix_sock", version: "1.0", te_file: "zabbix_sock.te"}
+  security_ports:
+    - {port: 3306, protocol: 'tcp', port_type: 'mysqld_port_t'}
+  sebooleans:
+    - {name: 'httpd_can_network_connect_db', state: yes}
+    - {name: "httpd_can_connect_zabbix", state: yes}
+    - {name: "daemons_enable_cluster_mode", state: yes}
+    - {name: "zabbix_can_network", state: yes}
+
+zabbix_repositories:
+  redhat:
+    - name: zabbix
+      description: Zabbix Official Repository - $basearch
+      baseurl: http://repo.zabbix.com/zabbix/{{ zabbix_version }}/rhel/{{ ansible_distribution_major_version }}/$basearch/
+      gpgcheck: 0
+      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ZABBIX
+      state: present
+    - name: zabbix-supported
+      description: Zabbix Official Repository non-supported - $basearch
+      baseurl: http://repo.zabbix.com/non-supported/rhel/{{ ansible_distribution_major_version }}/$basearch/
+      gpgcheck: 0
+      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ZABBIX
+      state: present
+
+# # Database
+zabbix_database_creation: True
+zabbix_database_sqlload: True
+zabbix_server_database: mysql
+
+
+# zabbix-web specific vars
+zabbix_url: zabbix.example.com
+zabbix_apache_servername: "{{ zabbix_url | regex_findall('(?:https?\\://)?([\\w\\-\\.]+)') | first }}"
+zabbix_server_hostname: "{{ inventory_hostname }}"
+zabbix_url_aliases: []
+zabbix_apache_vhost_port: 80
+zabbix_apache_vhost_tls_port: 443
+zabbix_timezone: America/Chicago
+zabbix_vhost: True
+zabbix_apache_vhost_listen_ip: "*"
+zabbix_apache_tls: False
+zabbix_apache_redirect: False
+zabbix_apache_tls_crt: /etc/pki/server.crt
+zabbix_apache_tls_key: /etc/pki/server.key
+zabbix_apache_tls_chain:
+
+zabbix_web_max_execution_time: 300
+zabbix_web_memory_limit: 128M
+zabbix_web_post_max_size: 16M
+zabbix_web_upload_max_filesize: 2M
+zabbix_web_max_input_time: 300
+
+zabbix_apache_SSLPassPhraseDialog: exec:/usr/libexec/httpd-ssl-pass-dialog
+zabbix_apache_SSLSessionCache: shmcb:/run/httpd/sslcache(512000)
+zabbix_apache_SSLSessionCacheTimeout: 300
+zabbix_apache_SSLCryptoDevice: builtin
+
+zabbix_server_history_types:
+  - 'str'
+  - 'text'
+  - 'log'
+  - 'uint'
+  - 'dbl'
+
+zabbix_apache_user: apache
+zabbix_apache_group: apache
+zabbix_apache_log: httpd
+
+# zabbix-server specific vars
+zabbix_server_listenport: 10051
+zabbix_server_sourceip:
+zabbix_server_logtype: file
+zabbix_server_logfile: /var/log/zabbix/zabbix_server.log
+zabbix_server_logfilesize: 10
+zabbix_server_debuglevel: 3
+zabbix_server_pidfile: /var/run/zabbix/zabbix_server.pid
+zabbix_server_socketdir: /var/run/zabbix
+
+# Zabbix Database Options
+zabbix_server_database_interface: eth0
+zabbix_server_dbhost: localhost
+zabbix_server_dbname: zabbix-server
+zabbix_server_dbencoding: utf8
+zabbix_server_dbcollation: utf8_bin
+zabbix_server_dbuser: zabbix-server
+zabbix_server_dbpassword: zabbix-server
+zabbix_server_dbport: 3306
+zabbix3_server_mysql_login_host: "{{ hostvars[zabbix_server_dbhostname]['ansible_' + zabbix_server_database_interface]['ipv4']['address'] }}"
+zabbix_server_mysql_login_user: "{{ zabbix_server_dbuser }}"
+zabbix_server_mysql_login_password: "{{ zabbix_server_dbpassword }}"
+
+# Zabbix Configuration Options
+zabbix_server_historystoragetypes: uint,dbl,str,log,text
+zabbix_server_historystoragedateindex: 0
+zabbix_server_exportdir:
+zabbix_server_exportfilesize: 1G
+zabbix_server_startpollers: 5
+zabbix_server_startipmipollers: 0
+zabbix_server_startpollersunreachable: 1
+zabbix_server_starttrappers: 5
+zabbix_server_startpingers: 1
+zabbix_server_startdiscoverers: 1
+zabbix_server_starthttppollers: 1
+zabbix_server_starttimers: 1
+zabbix_server_startvmwarecollectors: 0
+zabbix_server_vmwarefrequency: 60
+zabbix_server_vmwarecachesize: 8M
+zabbix_server_snmptrapperfile: /tmp/zabbix_traps.tmp
+zabbix_server_startsnmptrapper: 0
+zabbix_server_listenip:
+zabbix_server_housekeepingfrequency: 1
+zabbix_server_maxhousekeeperdelete: 500
+zabbix_server_senderfrequency: 30
+zabbix_server_cachesize: 8M
+zabbix_server_cacheupdatefrequency: 60
+zabbix_server_startdbsyncers: 4
+zabbix_server_historycachesize: 8M
+zabbix_server_historyindexcachesize: 4M
+zabbix_server_trendcachesize: 4M
+zabbix_server_historytextcachesize: 16M
+zabbix_server_valuecachesize: 8M
+zabbix_server_nodenoevents: 0
+zabbix_server_nodenohistory: 0
+zabbix_server_timeout: 3
+zabbix_server_trappertimeout: 300
+zabbix_server_unreachableperiod: 45
+zabbix_server_unavailabledelay: 60
+zabbix_server_unreachabledelay: 15
+zabbix_server_alertscriptspath: /usr/lib/zabbix/alertscripts
+zabbix_server_externalscriptspath: /usr/lib/zabbix/externalscripts
+zabbix_server_fpinglocation: /usr/sbin/fping
+zabbix_server_fping6location: /usr/sbin/fping6
+zabbix_server_sshkeylocation:
+zabbix_server_logslowqueries: 0
+zabbix_server_tmpdir: /tmp
+zabbix_server_startproxypollers: 1
+zabbix_server_proxyconfigfrequency: 3600
+zabbix_server_proxydatafrequency: 1
+zabbix_server_allowroot: 0
+zabbix_server_user: zabbix
+zabbix_server_include: /etc/zabbix/zabbix_server.conf.d
+zabbix_server_startescalators: 1
+zabbix_server_vmwareperffrequency: 60
+zabbix_server_vmwaretimeout: 10
+
+# Zabbix TLS Options
+zabbix_server_sslcertlocation: ${datadir}/zabbix/ssl/certs
+zabbix_server_sslkeylocation: ${datadir}/zabbix/ssl/keys
+zabbix_server_sslcalocation:
+zabbix_server_loadmodulepath: ${libdir}/modules
+zabbix_server_loadmodule:
+zabbix_server_tlscafile:
+zabbix_server_tlscrlfile:
+zabbix_server_tlscertfile:
+zabbix_server_tlskeyfile:

@@ -1,0 +1,11 @@
+---
+- src: git+https://github.com/afcyber-dream/ansible-role-apache.git
+  version: master
+- src: git+https://github.com/afcyber-dream/ansible-role-repositories.git
+  version: master
+- src: git+https://github.com/afcyber-dream/ansible-role-packages.git
+  version: master
+- src: git+https://github.com/afcyber-dream/ansible-role-security.git
+  version: master
+- src: git+https://github.com/afcyber-dream/ansible-role-galera.git
+  version: master

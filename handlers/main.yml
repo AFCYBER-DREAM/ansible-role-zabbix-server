@@ -1,0 +1,12 @@
+---
+- name: zabbix-server restarted
+  service:
+    name: zabbix-server
+    state: restarted
+    enabled: true
+  tags: zabbix-server
+
+- name: restart apache
+  service:
+    name: httpd
+    state: restarted
