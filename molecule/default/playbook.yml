@@ -1,0 +1,25 @@
+---
+- hosts: galera
+  become: yes
+  gather_facts: true
+  vars:
+    - galera_ssl: false
+    - mysql_ssl: false
+  roles:
+    - role: ansible-role-galera
+
+- hosts: zabbix
+  become: yes
+  gather_facts: true
+  vars:
+    - zabbix_server_database_interface: eth1
+    - zabbix_server_dbhostname: mysql-centos
+    - zabbix_server_dbuser: zbx
+    - zabbix_server_dbport: 3306
+    - zabbix_server_dbpassword: S0l05Dy0EuuCvq
+    - zabbix_server_mysql_login_host: "{{ hostvars[zabbix_server_dbhostname]['ansible_' + zabbix_server_database_interface]['ipv4']['address'] }}"
+    - zabbix_server_mysql_login_user: "{{ zabbix_server_dbuser }}"
+    - zabbix_server_mysql_login_password: "{{ zabbix_server_dbpassword }}"
+    - zabbix_server_mysql_login_port: "{{ zabbix_server_dbport }}"
+  roles:
+    - role: ansible-role-zabbix-server
