@@ -1,0 +1,19 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+    # The base CentOS Container doesn't include a couple of the utilities
+    # that are needed while gathering facts
+    - name: Install needed packages for ansible
+      yum:
+        name:
+          - iproute
+          - which
+
+    - name: Update the yum.conf to allow docs
+      lineinfile:
+        path: /etc/yum.conf
+        regexp: '^tsflags='
+        line: '#tsflags='
