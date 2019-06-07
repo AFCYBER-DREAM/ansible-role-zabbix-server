@@ -1,5 +1,6 @@
 ansible-role-zabbix-server
 =========
+[![Build Status](https://travis-ci.com/AFCYBER-DREAM/ansible-role-zabbix-server.svg?branch=master)](https://travis-ci.com/AFCYBER-DREAM/ansible-role-zabbix-server)
 
 Deploys a zabbix server and web front end
 
