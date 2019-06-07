@@ -1,12 +1,14 @@
 
-module zabbix_sock 1.0;
+module zabbix_sock 1.1;
 
 require {
         type zabbix_var_run_t;
         type zabbix_t;
+        class process setrlimit;
         class sock_file { create unlink };
 }
 
 #============= zabbix_t ==============
 allow zabbix_t zabbix_var_run_t:sock_file create;
 allow zabbix_t zabbix_var_run_t:sock_file unlink;
+allow zabbix_t self:process setrlimit;

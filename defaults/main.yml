@@ -17,9 +17,11 @@ zabbix_packages:
 
 zabbix_security:
   selinux_te_files:
-    - {name: "zabbix_sock", version: "1.0", te_file: "zabbix_sock.te"}
+    - {name: "zabbix_sock", version: "1.1", te_file: "zabbix_sock.te"}
   security_ports:
     - {port: 3306, protocol: 'tcp', port_type: 'mysqld_port_t'}
+    - {port: 80, protocol: 'tcp'}
+    - {port: 443, protocol: 'tcp'}
   sebooleans:
     - {name: 'httpd_can_network_connect_db', state: yes}
     - {name: "httpd_can_connect_zabbix", state: yes}
